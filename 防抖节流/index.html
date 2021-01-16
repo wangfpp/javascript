@@ -41,7 +41,7 @@
             line-height: 50px;
         }
         
-        #btn {
+        button {
             border: 1px solid transparent;
             outline: none;
             padding: 5px 10px;
@@ -51,11 +51,23 @@
             background: rgba(48, 201, 232, 1);
             color: #fff;
             cursor: pointer;
+            margin: 10px 0;
         }
         
-        #btn:focus {
+        button:focus {
             filter: hue-rotate(20deg);
             border: 1px solid rgba(48, 201, 232, 1);
+        }
+
+        input {
+            display: block;
+            border: 1px solid #d1e3Fa;
+            height: 25px;
+            border-radius: 3px;
+            outline: none;
+        }
+        input:focus{
+            border:1px solid rgb(245, 10, 245);
         }
     </style>
 </head>
@@ -66,13 +78,18 @@
     </div>
     <div id="time"></div>
     <button id="btn">取消防抖</button>
+
+    <input type="text" id="input_text" placeholder="请输入点什么">
 </body>
 
 </html>
 <script>
     let rootNode = document.getElementById("root"),
         cancelDebounceBtn = document.getElementById("btn"),
+        inputNode = document.getElementById("input_text"),
         timeNode = document.getElementById("time");
+
+/*********************+++++++++防抖++++++++****************************************/
     /**
      * @descripttion 触发的真正事件
      * */
@@ -90,9 +107,14 @@
     let debounceFn = debounce(task, 1000, true);
     rootNode.onmousemove = debounceFn;
     cancelDebounceBtn.onclick = function() {
-        // TODO 取消防抖
-        // time
         timeNode.innerText = "";
         debounceFn.cancel();
     }
+
+/***************************************++++++++++++++节流+++++++++++++++**********************************************/
+function inputTask(e) {
+    let { target } = e;
+    console.log(target.value);
+}
+inputNode.oninput = throttle(inputTask, 2000);
 </script>
