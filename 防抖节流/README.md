@@ -6,7 +6,7 @@
 
 1. 连续触发不执行响应逻辑
 2. 停止触发后一段时间才执行
-3. 执行过程中的this执行问题
+3. 执行过程中的this指向问题
 
 
 ```javascript
@@ -27,5 +27,25 @@ return function() {
     timeout = setTimeout(() => {
         fn.apply(context, args);
     }, wait)
+}
+```
+
+
+#### 节流函数
+连续触发事件的情况下每隔一定时间才触发一次事件,减少网络请求
+
+1. 连续触发的事件
+2. 每隔一定时间触发一次
+   
+```javascript
+let time = 0;
+return function() {
+    let context = this,
+    args = arguments;
+    let now = new Date().getTime();
+    if (now - time > wait) {
+        time = now;
+        fn.apply(context, args);
+    }
 }
 ```
