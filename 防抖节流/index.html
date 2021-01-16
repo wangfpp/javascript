@@ -1,0 +1,98 @@
+<!--
+ * @Author: your name
+ * @Date: 2021-01-16 11:21:23
+ * @LastEditTime: 2021-01-16 13:17:39
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: /interaction_inside/Users/mac/github/javascript/防抖节流/index.html
+-->
+<!DOCTYPE html>
+<html lang="zn-CN">
+
+<head>
+    <title>防抖和节流学习记录</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="./index.js"></script>
+    <style>
+        #root {
+            width: 100%;
+            height: 400px;
+            min-width: 400px;
+            border-radius: 10px;
+            background: linear-gradient(to right bottom, #0251ff 0%, #30c9e8 100%);
+            box-shadow: 8px 17px 30px 10px #d1e3FA;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            text-shadow: #fff 0 0 10px,#fff 0 0 20px,
+            rgb(245, 10, 245) 0 0 30px,rgb(245, 10, 245) 0 0 40px,
+             purple 0 0 50px,purple 0 0 60px,purple 0 0 70px;
+        }
+        
+        #time {
+            width: 100%;
+            height: 50px;
+            margin: 10px 0;
+            text-align: start;
+            font-size: 12px;
+            line-height: 50px;
+        }
+        
+        #btn {
+            border: 1px solid transparent;
+            outline: none;
+            padding: 5px 10px;
+            box-sizing: border-box;
+            border-radius: 5px;
+            box-shadow: 2px 5px 5px 0px #d1e3Fa;
+            background: rgba(48, 201, 232, 1);
+            color: #fff;
+            cursor: pointer;
+        }
+        
+        #btn:focus {
+            filter: hue-rotate(20deg);
+            border: 1px solid rgba(48, 201, 232, 1);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root">
+        鼠标在此区域滑动时不会连续触发事件,做了防抖操作
+    </div>
+    <div id="time"></div>
+    <button id="btn">取消防抖</button>
+</body>
+
+</html>
+<script>
+    let rootNode = document.getElementById("root"),
+        cancelDebounceBtn = document.getElementById("btn"),
+        timeNode = document.getElementById("time");
+    /**
+     * @descripttion 触发的真正事件
+     * */
+    function task(e) {
+        let {
+            target,
+            type: eventType,
+            timeStamp
+        } = e;
+        let {
+            outerHTML
+        } = target;
+        timeNode.innerText = `在${timeStamp * 1000}触发的${eventType}`;
+    }
+    let debounceFn = debounce(task, 1000, true);
+    rootNode.onmousemove = debounceFn;
+    cancelDebounceBtn.onclick = function() {
+        // TODO 取消防抖
+        // time
+        timeNode.innerText = "";
+        debounceFn.cancel();
+    }
+</script>
