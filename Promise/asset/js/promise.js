@@ -49,9 +49,7 @@ class ZkPromise {
         // 以下的两个判断解决 then内的方法可以不传
         // 重新学习一下typeof !!!!!
         if (typeof onFulfilled  !== "function"){
-            onFulfilled = () => {
-                return this.value
-            };
+            onFulfilled = () => this.value
             // 返回this.value 解决then的穿透 可以组成往下传递上层的值
         }
         if (typeof onRejected  !== "function"){
@@ -69,16 +67,6 @@ class ZkPromise {
                         } catch(err) {
                             reject(err);
                         }
-                        // try{
-                        //     let result = onFulfilled(value);
-                        //     if (result instanceof ZkPromise) {
-                        //         result.then(resolve, reject)
-                        //     } else {
-                        //         resolve(result);
-                        //     }
-                        // }catch(err) {
-                        //     reject(err);
-                        // }
                     },
                     onRejected: reason => {
                         try{
@@ -87,12 +75,6 @@ class ZkPromise {
                         } catch(err) {
                             reject(err);
                         }
-                        // try {
-                        //     let result = onRejected(reason);
-                        //     resolve(result);
-                        // } catch(err) {
-                        //     reject(err);
-                        // }
                     }
                 })
             }
@@ -107,58 +89,34 @@ class ZkPromise {
                     } catch(err) {
                         reject(err);
                     }
-                    // try {
-                    //     let result = onFulfilled(this.value);
-                    //     if (result instanceof ZkPromise) {
-                    //         result.then(resolve, reject); // 这里的.then肯定会执行
-                    //     } else {
-                    //         resolve(result);
-                    //     }
-                    // } catch(err) {
-                    //     reject(err);
-                    // }
                 })
             }
             if(this.status === ZkPromise.REJECTED) {
                 setTimeout(() => {
                     try{
-                        let result = onRejected(reason);
+                        let result = onRejected(this.value);
                         this.resolveResult(resultPromise, result, resolve, reject);
                     } catch(err) {
                         reject(err);
                     }
-                    
-                    // try {
-                    //     let result = onRejected(this.value);
-                    //     if (result instanceof ZkPromise) {
-                    //         result.then(res => {
-                    //             resolve(res);
-                    //         }, err => {
-                    //             reject(err);
-                    //         })
-                    //     } else {
-                    //         resolve(result);
-                    //     }
-                    //     // 上一个Promise不管是resolve还是reject只要有返回值则进入第二个Promise的resolve
-                    // } catch (err) {
-                    //     reject(err);
-                    // }
                 })
             }
         })
         return resultPromise;
     }
     resolveResult(originPromise, result, resolve, reject) {
-        if (originPromise === result) {
-            throw TypeError("Chaining cycle detected for promise #<Promise>");
-        }
+        // if (originPromise === result) {
+        //     throw TypeError("Chaining cycle detected for promise #<Promise>");
+        // }
         try {
             if (result instanceof ZkPromise) {
                 result.then(res => {
+                    console.log(res);
                     resolve(res);
                 }, err => {
+                    console.log(err);
                     reject(err);
-                })
+                });
             } else {
                 resolve(result);
             }
@@ -167,5 +125,52 @@ class ZkPromise {
             reject(err);
         }
     }
-    noop() {}
+    static resolve(value) {
+        return new ZkPromise((resolve, reject) => {
+            if(value instanceof ZkPromise) {
+                console.log(value.then)
+                value.then(resolve, reject);
+            } else {
+                resolve(value);
+            }
+        })
+    }
+
+    static reject(value) {
+        return new ZkPromise((resolve, reject) => {
+            if(value instanceof ZkPromise) {
+                value.then(resolve, reject);
+            } else {
+                resolve(value);
+            }
+        })
+    }
+
+    static all(promises) {
+        let map = {};
+        return new ZkPromise((resolve, reject) => {
+            promises.forEach((promise, index) => {
+                promise.then(res => {
+                    map[index] = res; // 这里保证输出的顺序
+                    if (Object.keys(map).length === promises.length) {
+                        resolve(Object.values(map));
+                    }
+                }, err => {
+                    reject(err);
+                })
+            })
+        })
+    }
+    
+    static race(promises) {
+        return new ZkPromise((resolve, reject) => {
+            promises.forEach(promise => {
+                promise.then(res => {
+                    resolve(res);
+                }, err => {
+                    reject(err);
+                })
+            })
+        })
+    }
 }

@@ -1,28 +1,48 @@
-let p = new ZkPromise((resolve, reject) => {
-        // reject(1111);
-        setTimeout(() => {
-            resolve(111);
-        }, 2000)
-})
-.then(
-    res => {
-        let p2 = p.then(res => {
-            return p2;
-        })
-    },
-    err => {
-        console.log(aaa);
+// let p = new ZkPromise((resolve, reject) => {
+//         // reject(1111);
+//         setTimeout(() => {
+//             resolve(111);
+//         }, 2000)
+// })
+// .then(
+//     res => {
+//         console.log(res);
+//     },
+//     err => {
+//         console.log(err);
         
-    }
-)
-.then(res => {
-    console.log("Second promise resolve:" + res);
-}, err => {
-    console.log("Second promise reject:" + err);
+//     }
+// )
+// .then(res => {
+//     console.log("Second promise resolve:" + res);
+// }, err => {
+//     console.log("Second promise reject:" + err);
+// })
+
+// console.log(p);
+
+let p = new ZkPromise((resolve, reject) => {
+    setTimeout(() => {
+        resolve("aaa");
+    }, 3000);
+})
+let p2 = new ZkPromise((resolve, reject) => {
+    setTimeout(() => {
+        reject("111");
+    }, 50);
 })
 
-console.log(p);
-
+let p3 = new ZkPromise((resolve, reject) => {
+    setTimeout(() => {
+        reject(1000);
+    }, 100);
+})
+// setTimeout(() => {console.log(p)}, 3000);
+ZkPromise.race([p, p2, p3]).then(res => {
+    console.log(res);
+}, err => {
+    console.log(err);
+})
 
 
 // let p2 = new Promise((resolve, reject) => {
@@ -31,9 +51,6 @@ console.log(p);
 //     }, 2000);
 // }).then(res => {
 //     console.log("原生promise正确回调:" + res);
-//     let p3 = p2.then(res => {
-//         return p3;
-//     })
 // }, err => {
 //     console.log("原生promise错误回调:" + err);
 //     // return new Promise()
