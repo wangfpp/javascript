@@ -105,30 +105,29 @@ class ZkPromise {
         return resultPromise;
     }
     resolveResult(originPromise, result, resolve, reject) {
-        // if (originPromise === result) {
-        //     throw TypeError("Chaining cycle detected for promise #<Promise>");
-        // }
-        try {
-            if (result instanceof ZkPromise) {
-                result.then(res => {
-                    console.log(res);
-                    resolve(res);
-                }, err => {
-                    console.log(err);
-                    reject(err);
-                });
-            } else {
-                resolve(result);
+        if (originPromise === result) {
+            throw TypeError("Chaining cycle detected for promise #<Promise>");
+        } else {
+            try {
+                if (result instanceof ZkPromise) {
+                    result.then(res => {
+                        resolve(res);
+                    }, err => {
+                        reject(err);
+                    });
+                } else {
+                    resolve(result);
+                }
+                // 上一个Promise不管是resolve还是reject只要有返回值则进入第二个Promise的resolve
+            } catch (err) {
+                reject(err);
             }
-            // 上一个Promise不管是resolve还是reject只要有返回值则进入第二个Promise的resolve
-        } catch (err) {
-            reject(err);
         }
+        
     }
     static resolve(value) {
         return new ZkPromise((resolve, reject) => {
             if(value instanceof ZkPromise) {
-                console.log(value.then)
                 value.then(resolve, reject);
             } else {
                 resolve(value);
@@ -174,3 +173,12 @@ class ZkPromise {
         })
     }
 }
+ZkPromise.defer = ZkPromise.deferred = function() {
+    let df = {};
+    df.promise = new ZkPromise((resolve, reject) => {
+        df.resolve = resolve;
+        df.reject = reject;
+    })
+    return df;
+}
+module.exports = ZkPromise;

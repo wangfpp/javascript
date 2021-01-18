@@ -18,3 +18,6 @@
 3. 终值 (Eventual Value): 指Promise在Fulfill中传递给解决回调的值 因为Promise的状态变化不可逆性,所以此返回值成为终值, 也简洁成为Promise的值
 
 4. 据因 (reason): 指的是Promise在Reject中返回的失败原因   
+
+#### Promise　then
+Promise必须有一个then函数, 接收两个可选参数onFulfilled onRejected, 分别在接收fuldill和reject的状态值,
