@@ -2,6 +2,7 @@ function Person(name, age, sex) {
     this.name = name;
     this.age = age;
     this.sex = sex;
+    console.log(new.target);
     return new String("aaa");
 }
 
@@ -17,13 +18,8 @@ function mynew() {
     let o = {};
     o.__proto__ = originFn.prototype;
     let result = originFn.apply(o, args);
+    
     return result instanceof Object ? result : o;
 }
 
-if(true) {
-    tmp = "abc";
-    console.log(tmp);
-    let tmp;
-    console.log(tmp);
-    
-}
+console.log(window.name);
